@@ -152,7 +152,7 @@ class ScanCodeView: UIView {
         // 扫码配置
         prelayer = AVCaptureVideoPreviewLayer.init(session: scanManager.session)
         prelayer.videoGravity = AVLayerVideoGravityResizeAspectFill
-        prelayer.frame = frame
+        prelayer.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
         self.layer.addSublayer(prelayer)
         
         // 绘制扫码区域

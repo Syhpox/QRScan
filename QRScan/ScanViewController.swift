@@ -41,7 +41,7 @@ class ScanViewController: UIViewController, AVCaptureMetadataOutputObjectsDelega
         }
 
         
-        scanView = ScanCodeView.init(CGRect(x: 0, y: 64 ,width: self.view.bounds.width, height: self.view.bounds.height - 64), type: .fetch)
+        scanView = ScanCodeView.init(CGRect(x: 0, y: 64 ,width: self.view.bounds.width, height: self.view.bounds.height-64), type: .fetch)
         scanView.needTorch = true
         self.view.addSubview(scanView)
         scanView.resultBlc = { code in
