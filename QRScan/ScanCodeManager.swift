@@ -21,21 +21,21 @@ class ScanCodeManager: NSObject, AVCaptureMetadataOutputObjectsDelegate {
     
     fileprivate override init() {
         super.init()
-        self.device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        self.device = AVCaptureDevice.default(for: AVMediaType.video)
         self.input = try? AVCaptureDeviceInput.init(device: device)
         self.output = AVCaptureMetadataOutput.init()
         output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
         
         session = AVCaptureSession.init()
-        session.canSetSessionPreset(AVCaptureSessionPresetHigh)
+        session.canSetSessionPreset(AVCaptureSession.Preset.high)
         session.addInput(input)
         session.addOutput(output)
         
         // 设置扫码支持的编码格式
-        output.metadataObjectTypes = [AVMetadataObjectTypeQRCode,
-                                      AVMetadataObjectTypeEAN13Code,
-                                      AVMetadataObjectTypeEAN8Code,
-                                      AVMetadataObjectTypeCode128Code
+        output.metadataObjectTypes = [AVMetadataObject.ObjectType.qr,
+                                      AVMetadataObject.ObjectType.ean13,
+                                      AVMetadataObject.ObjectType.ean8,
+                                      AVMetadataObject.ObjectType.code128
         ]
     }
     
@@ -53,12 +53,12 @@ class ScanCodeManager: NSObject, AVCaptureMetadataOutputObjectsDelegate {
     }
     
     //MARK: - AVCaptureMetadataOutputObjectsDelegate
-    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
+    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         if metadataObjects.count > 0 {
             session.stopRunning()
             let obj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
             if let block = resultBlc {
-                block(obj.stringValue)
+                block(obj.stringValue!)
             }
         }
     }
@@ -79,7 +79,7 @@ class ScanCodeManager: NSObject, AVCaptureMetadataOutputObjectsDelegate {
             return false
 
         }
-        let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+        let status = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
         if status == .restricted || status == .denied {
             let alert = UIAlertController.init(title: "提示", message: "没有摄像头权限，请到设置打开摄像头", preferredStyle: .alert)
             let action = UIAlertAction.init(title: "确定", style: .default, handler: { (alert) in

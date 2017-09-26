@@ -139,7 +139,15 @@ class ScanCodeView: UIView {
     fileprivate convenience init(_ frame: CGRect, scanRect: CGRect, lineColor: UIColor = UIColor.yellow) {
         self.init(frame: frame)
         self.backgroundColor = .clear
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            return
+        }
         
+        let status = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
+        guard status == .authorized || status == .notDetermined else {
+            return
+        }
+
         scanManager = ScanCodeManager.init({[weak self] (code) in
             self?.stopScanLineAnimat()
             if let blc = self?.resultBlc {
@@ -151,7 +159,7 @@ class ScanCodeView: UIView {
         
         // 扫码配置
         prelayer = AVCaptureVideoPreviewLayer.init(session: scanManager.session)
-        prelayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        prelayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         prelayer.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
         self.layer.addSublayer(prelayer)
         
@@ -183,7 +191,7 @@ class ScanCodeView: UIView {
         torchBtn.isHidden = !needTorch
         self.addSubview(torchBtn)
         torchBtn.addTarget(self, action: #selector(torchBtnClick(btn:)), for: .touchUpInside)
-        torchDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        torchDevice = AVCaptureDevice.default(for: .video)
         
         /// activityView
         activityView = RunningView.init(CGPoint.zero)
