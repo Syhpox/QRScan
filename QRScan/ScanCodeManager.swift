@@ -33,9 +33,16 @@ class ScanCodeManager: NSObject, AVCaptureMetadataOutputObjectsDelegate {
         
         // 设置扫码支持的编码格式
         output.metadataObjectTypes = [AVMetadataObject.ObjectType.qr,
+                                      AVMetadataObject.ObjectType.code39,
+                                      AVMetadataObject.ObjectType.code39Mod43,
                                       AVMetadataObject.ObjectType.ean13,
                                       AVMetadataObject.ObjectType.ean8,
-                                      AVMetadataObject.ObjectType.code128
+                                      AVMetadataObject.ObjectType.code93,
+                                      AVMetadataObject.ObjectType.code128,
+                                      AVMetadataObject.ObjectType.pdf417,
+                                      AVMetadataObject.ObjectType.upce,
+                                      AVMetadataObject.ObjectType.interleaved2of5,
+                                      AVMetadataObject.ObjectType.dataMatrix
         ]
     }
     
