@@ -242,6 +242,15 @@ class ScanCodeView: UIView {
         }
     }
     
+    /// 停止扫码 相机运行需手动控制，相机运行只能本身有关系，不会随着页面push而停止
+    func stopRunning() {
+        scanManager.session.stopRunning()
+        // 关闭手电筒
+        if needTorch, torchOn {
+            torchOn = false
+        }
+    }
+
     /// 开始activity
     func startActivity() {
         activityView.isHidden = false
