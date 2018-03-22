@@ -16,7 +16,7 @@ fileprivate let ScanCode_ScreenHeight = UIScreen.main.bounds.size.height
 enum ScanCodeType {
     case fetch // 扫码 （条件：全屏尺寸）
     case customSize(CGFloat, CGFloat, String) //自定义size(width, height) 和 tips
-    case customRect(CGFloat, CGFloat, CGFloat, CGFloat, String, UIColor) //自定义rect(x, y, width, height) 和 tips 自定义line颜色
+    case customRect(CGRect, String, UIColor) //自定义rect 和 tips 自定义line颜色
     
     /// 固定配置 扫码范围以及提示
     func configure() -> (scanOrigin: CGPoint, scanSize: CGSize, tips: String, lineColor: UIColor) {
@@ -27,8 +27,8 @@ enum ScanCodeType {
         case .customSize(let width, let height, let tips):
             return (scanOrigin: CGPoint(x: width * (1 - 4 / 5) / 2.0, y: 100), scanSize: CGSize(width: width,height: height), tips: tips, lineColor: UIColor.yellow)
             
-        case .customRect(let x, let y, let width, let height, let tips, let lineColor):
-            return (scanOrigin:CGPoint(x: x, y: y), scanSize: CGSize(width: width,height: height), tips: tips, lineColor: lineColor)
+        case .customRect(let rect, let tips, let lineColor):
+            return (scanOrigin:rect.origin, scanSize: rect.size, tips: tips, lineColor: lineColor)
         }
     }
 }
@@ -91,9 +91,6 @@ class ScanCodeView: UIView {
         return lab
     }()
     
-    /// 系统RunningView图
-    fileprivate var activityView: RunningView!
-    
     /// 扫码处理
     fileprivate var scanManager: ScanCodeManager!
     
@@ -121,6 +118,16 @@ class ScanCodeView: UIView {
     }
     /// 记录type样式
     fileprivate(set) var type: ScanCodeType!
+    
+    /// 设置可 扫码格式
+    var scanTypes: [AVMetadataObject.ObjectType]! {
+        didSet {
+            if scanManager != nil {
+                scanManager.scanTypes = scanTypes
+            }
+        }
+    }
+
     
     /// 设置 默认扫描线
     var isDefault: Bool = true
@@ -193,12 +200,6 @@ class ScanCodeView: UIView {
         torchBtn.addTarget(self, action: #selector(torchBtnClick(btn:)), for: .touchUpInside)
         torchDevice = AVCaptureDevice.default(for: .video)
         
-        /// activityView
-        activityView = RunningView.init(CGPoint.zero)
-        activityView.frame = CGRect(origin: CGPoint(x: scanRect.origin.x + (scanRect.size.width - activityView.frame.width) / 2.0,y: scanRect.origin.y + (scanRect.size.height - activityView.frame.height) / 2.0), size: activityView.frame.size)
-        self.addSubview(activityView)
-        stopActivity()
-        
         scanLineAnimat(0, scanShadow.interestFrame.size.height - line.frame.size.height)
     }
     
@@ -249,18 +250,6 @@ class ScanCodeView: UIView {
         if needTorch, torchOn {
             torchOn = false
         }
-    }
-
-    /// 开始activity
-    func startActivity() {
-        activityView.isHidden = false
-        activityView.start()
-    }
-    
-    /// 停止activity
-    func stopActivity() {
-        activityView.isHidden = true
-        activityView.stop()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -366,7 +355,7 @@ fileprivate class ScanShadowView: UIView {
     }
     
 }
-
+/*
 fileprivate class RunningView: UIView {
     var activity: UIActivityIndicatorView!
     var messageLab: UILabel!
@@ -405,9 +394,6 @@ fileprivate class RunningView: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
-    
 }
 
-
+*/

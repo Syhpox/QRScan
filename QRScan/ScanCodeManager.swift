@@ -16,6 +16,14 @@ class ScanCodeManager: NSObject, AVCaptureMetadataOutputObjectsDelegate {
     fileprivate var input: AVCaptureDeviceInput!
     fileprivate var output: AVCaptureMetadataOutput!
     var session: AVCaptureSession!
+    // 默认 扫码所有类型
+    var scanTypes: [AVMetadataObject.ObjectType] = [] {
+        didSet {
+            if output != nil {
+                output.metadataObjectTypes = scanTypes
+            }
+        }
+    }
     
     var resultBlc:((String) -> Void)?
     
